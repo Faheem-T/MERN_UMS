@@ -2,6 +2,7 @@ import Express from "express";
 import logger from "morgan";
 import cors from "cors";
 import mongoose from "mongoose";
+import { authRouter } from "./routes/auth/authRouter";
 
 const app = Express();
 const PORT = 3000;
@@ -19,7 +20,8 @@ mongoose
     console.log("Couldn't connect to MongoDB", err);
   });
 
-// app.use();
+app.use("/api/auth", authRouter);
+
 app.get("/api/users", (req, res, next) => {
   res.json(users);
 });
