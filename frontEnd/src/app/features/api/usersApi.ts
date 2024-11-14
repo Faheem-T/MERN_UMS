@@ -3,7 +3,15 @@ import { User } from "../../ZodSchemas/userSchema";
 
 export const usersApi = createApi({
   reducerPath: "usersApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3000" }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: "http://localhost:3000",
+    credentials: "include", // Add this line
+    prepareHeaders: (headers) => {
+      headers.set("Accept", "application/json");
+      headers.set("accessToken", "someToken");
+      return headers;
+    },
+  }),
   endpoints: (builder) => {
     return {
       getUsers: builder.query({ query: () => "/api/users" }),
@@ -15,9 +23,9 @@ export const usersApi = createApi({
         }),
       }),
       loginUser: builder.mutation({
-        query: <T>(user: T) => ({
+        query: (user) => ({
           url: "/api/auth/login",
-          mothed: "POST",
+          method: "POST",
           body: user,
         }),
       }),

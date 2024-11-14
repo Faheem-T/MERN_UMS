@@ -10,8 +10,7 @@ export const validateUserMiddleware = async (
   const user = req.body;
   const { success, data, error } = userSchema.safeParse(user);
   if (success) {
-    res.send(data);
-    await UserModel.create({ ...data }).then(console.log);
+    next();
   } else res.status(401).send(error.issues);
   console.log(success, data, error);
 };

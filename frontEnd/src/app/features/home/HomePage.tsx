@@ -1,3 +1,14 @@
 export const HomePage = () => {
-  return <div>Welcome Home!</div>;
+  return (
+    <div>
+      <div>Welcome Home!</div>;
+      <button
+        onClick={() =>
+          fetch("http://localhost:3000/api/auth/status").then(console.log)
+        }
+      >
+        status
+      </button>
+    </div>
+  );
 };

@@ -16,3 +16,10 @@ export const userSchema = z.object({
 });
 
 export type User = z.infer<typeof userSchema>;
+
+export const loginUserSchema = z.object({
+  identifier: z.string().min(1, "Username / Email is required"),
+  password: z.string().min(1, "Password is required"),
+});
+
+export type LoginUser = z.infer<typeof loginUserSchema>;
