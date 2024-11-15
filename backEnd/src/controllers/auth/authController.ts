@@ -5,6 +5,7 @@ import { LoginUser } from "../../ZodSchemas/userSchema";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import { RefreshTokenModel } from "../../models/RefreshTokenModel";
+import { compareWithHash, generateHash } from "../../utils/hashUtils";
 
 const REFRESH_TOKEN_LIFESPAN = 1000 * 60; // 1 minute
 const ACCESS_TOKEN_LIFESPAN = 60; // in seconds
@@ -25,6 +26,7 @@ export const handle_register_post = async (
   req: Request<{}, {}, User>,
   res: Response
 ) => {
+  req.body.password = generateHash(req.body.password);
   await UserModel.create({ ...req.body }).then(console.log);
   res.status(200).json("GOOD!!");
 };
@@ -58,7 +60,9 @@ export const handle_login_post = async (
     return;
   }
 
-  if (result.password !== password) {
+  if (!compareWithHash(password, result.password)) {
+    console.log(password);
+    console.log(result.password);
     console.log("incorrect password");
     res.status(401).json("Incorrect Password");
     return;
