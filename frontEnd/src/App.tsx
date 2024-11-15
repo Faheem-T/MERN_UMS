@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { RegisterPage } from "./app/features/auth/RegisterPage";
 import { LoginPage } from "./app/features/auth/LoginPage";
 import { HomePage } from "./app/features/home/HomePage";
+import { ProtectedPage } from "./app/features/home/ProtectedPage";
 
 const router = createBrowserRouter([
   {
@@ -13,6 +14,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+  },
+  {
+    path: "/protected",
+    element: <ProtectedPage />,
   },
 ]);
 

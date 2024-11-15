@@ -1,28 +1,36 @@
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  LoginUser,
-  loginUserSchema,
-  User,
-  userSchema,
-} from "../../ZodSchemas/userSchema";
+import { LoginUser, loginUserSchema } from "../../ZodSchemas/userSchema";
 import { useNavigate } from "react-router-dom";
-import { useLoginUserMutation } from "../api/usersApi";
+import {
+  useLoginUserMutation,
+  useRefreshAccessTokenQuery,
+} from "../api/usersApi";
+import { useAppSelector } from "../../hooks";
+import { useEffect } from "react";
 
 export const LoginPage = () => {
+  // trying to refresh
+  const { error } = useRefreshAccessTokenQuery({});
+  console.log(error);
   const navigate = useNavigate();
+  // user object
+  const user = useAppSelector((state) => state.auth.user);
+  useEffect(() => {
+    if (user) navigate("/");
+  }, [user, navigate]);
   // react form hook variables
   const form = useForm<LoginUser>({ resolver: zodResolver(loginUserSchema) });
   const { register, control, handleSubmit, formState } = form;
   const { errors } = formState;
 
   // login hook
-  const [createUserMutation, { isLoading }] = useLoginUserMutation();
+  const [createLoginUserMutation, { isLoading }] = useLoginUserMutation();
 
   // form submit handler
   const onSubmit = async (formData: LoginUser) => {
-    const { data, error } = await createUserMutation(formData);
+    const { data, error } = await createLoginUserMutation(formData);
     if (error) return console.log(error);
     else {
       console.log(data);
