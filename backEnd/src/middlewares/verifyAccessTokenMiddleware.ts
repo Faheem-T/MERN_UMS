@@ -10,19 +10,20 @@ export const verifyAccessTokenMiddleware = (
   const accessToken = authHeader && authHeader.split(" ")[1]; // Removes "Bearer " prefix
 
   if (!accessToken) {
-    res.status(401).json({ message: "No access token provided" });
+    res.status(403).json({ success: false, message: "Invalid token" });
     return;
   }
 
   const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
   if (!accessTokenSecret) {
-    res.status(401);
+    res.status(500).json({ success: false, message: "Internal server error" });
+    console.log("Access token secret not found");
     return;
   }
   try {
     jwt.verify(accessToken, accessTokenSecret);
     next();
   } catch {
-    res.status(401).json({ message: "Invalid token" });
+    res.status(403).json({ message: "Invalid token" });
   }
 };
