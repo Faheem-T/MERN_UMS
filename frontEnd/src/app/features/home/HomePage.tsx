@@ -1,24 +1,38 @@
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "../../hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 import { useEffect } from "react";
-import { useRefreshAccessTokenQuery } from "../api/usersApi";
+// import { useAuth } from "../api/usersApi";
+import { selectUser, userLoggedOut } from "../auth/authSlice";
 // import { useCheckStatusQuery } from "../api/usersApi";
 
 export const HomePage = () => {
   // const { isLoading, data } = useCheckStatusQuery({});
   const navigate = useNavigate();
-  const { error } = useRefreshAccessTokenQuery({});
-  console.log("Error: ", error);
-  const user = useAppSelector((state) => state.auth.user);
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(selectUser);
+  // const { user, isLoading: isAuthLoading } = useAuth();
+  // const { error, data, isLoading } = useRefreshAccessTokenQuery({});
+  // console.log("Error: ", error);
+
   useEffect(() => {
     console.log("user: ", user);
     if (!user) navigate("/login");
   }, [user, navigate]);
+
+  // if (isAuthLoading) return <div>Loading...</div>;
+  // const user = useAppSelector((state) => state.auth.user);
   // console.log(data);
   return (
     <div>
-      <div>Welcome Home!</div>
-      {/* {isLoading ? <div>Loading</div> : ""} */}
+      <div>Welcome Home {user?.username}!</div>
+      <button
+        onClick={() => {
+          // dispatch(userLoggedOut());
+          // trigger({}).then(console.log);
+        }}
+      >
+        Log Out
+      </button>
     </div>
   );
 };

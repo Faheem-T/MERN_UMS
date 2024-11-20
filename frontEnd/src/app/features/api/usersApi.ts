@@ -3,21 +3,34 @@ import {
   createApi,
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
-import { User } from "../../ZodSchemas/userSchema";
-import { userLoggedIn, userLoggedOut } from "../auth/authSlice";
-import { RootState } from "../../store";
+import { LoginUser, User } from "../../ZodSchemas/userSchema";
+import { AppDispatch, RootState } from "../../store";
+import { authState, userLoggedIn, userLoggedOut } from "../auth/authSlice";
+
+interface AuthData {
+  data: authState;
+  success: boolean;
+  message: string;
+}
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:3000",
   credentials: "include",
-  prepareHeaders: (headers, { getState }) => {
+  prepareHeaders: async (headers, { getState }) => {
     headers.set("Accept", "application/json");
-    // Get token from state
-    const token = (getState() as RootState).auth.accessToken;
+    // const authData = usersApi.endpoints.refreshAccessToken.select()(
+    //   getState() as RootState
+    // )?.data;
 
-    if (token) {
-      // Add authorization header
-      headers.set("authorization", `Bearer ${token}`);
+    // const authData = usersApi.endpoints.refreshAccessToken.select();
+    // console.log("State in prepareHeaders:", authData);
+    // const authData = usersApi.endpoints.checkStatus.select(undefined)(
+    //   getState() as RootState
+    // )?.data;
+    // console.log(authData);
+    const accessToken = (getState() as RootState).auth.accessToken;
+    if (accessToken) {
+      headers.set("authorization", `Bearer ${accessToken}`);
     }
     return headers;
   },
@@ -25,24 +38,42 @@ const baseQuery = fetchBaseQuery({
 
 const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
-  if (result.error?.status === 401) {
+
+  if (result.error?.status === 403) {
+    // Don't retry if the refresh token endpoint itself returns 401
+    // console.log("inside reauth: ", api.endpoint);
+    // // console.log(result.error?.data.message);
+    // if (
+    //   api.endpoint === "refreshAccessToken"
+    //   // ||
+    //   // api.endpoint === "checkStatus"
+    // ) {
+    //   console.log("Refresh token expired, logging out...");
+    //   await api.dispatch(usersApi.endpoints.logOutUser.initiate()).unwrap();
+    //   return result;
+    // }
+
     console.log("Refreshing access token...");
-
     try {
-      // Refresh the access token
-      const refreshResult = await api
-        .dispatch(usersApi.endpoints.refreshAccessToken.initiate({}))
-        .unwrap();
-      console.log("got refresh result", refreshResult);
-      // update the access token in the store
-      api.dispatch(userLoggedIn(refreshResult));
+      // const refreshResult = await api
+      //   .dispatch(usersApi.endpoints.refreshAccessToken.initiate())
+      //   .unwrap();
+      const refreshResult = baseQuery("api/auth/refresh", api, extraOptions);
+      console.log(refreshResult);
 
-      // Retry the original query
-      result = await baseQuery(args, api, extraOptions);
+      if (refreshResult) {
+        const { user } = (api.getState() as RootState).auth;
+        const { refreshToken } = refreshResult;
+        api.dispatch(userLoggedIn({ user, refreshToken }));
+        // Retry the original query with new token
+        result = await baseQuery(args, api, extraOptions);
+      } else {
+        api.dispatch(userLoggedOut);
+      }
     } catch (error) {
       console.log(error);
-      console.log("refresh token is invalid, logging out user...");
-      api.dispatch(userLoggedOut());
+      console.log("Refresh failed, logging out user...");
+      await api.dispatch(usersApi.endpoints.logOutUser.initiate()).unwrap();
     }
   }
   return result;
@@ -51,54 +82,72 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
 export const usersApi = createApi({
   reducerPath: "usersApi",
   baseQuery: baseQueryWithReauth,
-  endpoints: (builder) => {
-    return {
-      getUsers: builder.query({ query: () => "/api/users" }),
-      registerUser: builder.mutation({
-        query: (user: User) => ({
-          url: "/api/auth/register",
-          method: "POST",
-          body: user,
-        }),
+  tagTypes: ["Auth", "User"],
+  endpoints: (builder) => ({
+    registerUser: builder.mutation<AuthData, User>({
+      // TODO: look into what the return type is
+      query: (user) => ({
+        url: "/api/auth/register",
+        method: "POST",
+        body: user,
       }),
-      loginUser: builder.mutation({
-        query: (user) => ({
-          url: "/api/auth/login",
-          method: "POST",
-          body: user,
-        }),
-        // function to set user data in store state on user log in
-        onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
-          try {
-            const { data } = await queryFulfilled;
-            dispatch(userLoggedIn(data));
-          } catch (err) {
-            console.log(err);
-          }
-        },
+      // invalidatesTags: ["Auth"],
+    }),
+
+    loginUser: builder.mutation<AuthData, LoginUser>({
+      query: (user) => ({
+        url: "/api/auth/login",
+        method: "POST",
+        body: user,
       }),
-      checkStatus: builder.query({ query: () => "/api/auth/status" }),
-      refreshAccessToken: builder.query({
-        query: () => "/api/auth/refresh",
-        onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
-          try {
-            const { data } = await queryFulfilled;
-            dispatch(userLoggedIn(data));
-          } catch (err) {
-            console.log(err);
-          }
-        },
+      // invalidatesTags: ["Auth"],
+    }),
+
+    checkStatus: builder.query<void, void>({
+      query: () => "/api/auth/status",
+      // providesTags: ["Auth"],
+    }),
+
+    refreshAccessToken: builder.query<AuthData, void>({
+      query: () => "/api/auth/refresh",
+      // providesTags: ["Auth"],
+    }),
+
+    protectedRoute: builder.query<any, void>({
+      query: () => "/protected",
+    }),
+
+    logOutUser: builder.mutation<void, void>({
+      query: () => ({
+        url: "/api/auth/logout",
+        method: "POST",
       }),
-      protectedRoute: builder.query({ query: () => "/protected" }),
-    };
-  },
+      // invalidatesTags: ["Auth"],
+      onQueryStarted: async (_, { dispatch }) => {
+        // Clear the user state after logout
+        dispatch(usersApi.util.resetApiState());
+      },
+    }),
+  }),
 });
 
 export const {
-  useGetUsersQuery,
   useRegisterUserMutation,
   useLoginUserMutation,
   useCheckStatusQuery,
   useRefreshAccessTokenQuery,
   useProtectedRouteQuery,
+  useLogOutUserMutation,
 } = usersApi;
+
+// Helper hooks for auth state
+// export const useAuth = () => {
+//   const { data: authData, isLoading } = useRefreshAccessTokenQuery();
+
+//   return {
+//     user: authData?.user,
+//     accessToken: authData?.accessToken,
+//     isAuthenticated: !!authData?.accessToken,
+//     isLoading,
+//   };
+// };

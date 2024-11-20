@@ -3,22 +3,30 @@ import { DevTool } from "@hookform/devtools";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginUser, loginUserSchema } from "../../ZodSchemas/userSchema";
 import { useNavigate } from "react-router-dom";
-import {
-  useLoginUserMutation,
-  useRefreshAccessTokenQuery,
-} from "../api/usersApi";
-import { useAppSelector } from "../../hooks";
+import { useLoginUserMutation } from "../api/usersApi";
 import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { selectUser, userLoggedIn } from "./authSlice";
 
 export const LoginPage = () => {
   // trying to refresh
-  const { error } = useRefreshAccessTokenQuery({});
-  console.log(error);
+  // const {
+  //   data,
+  //   error,
+  //   isLoading: isRefreshLoading,
+  // } = useRefreshAccessTokenMutation({});
+  // const { user, isLoading: isAuthLoading } = useAuth();
+  const user = useAppSelector(selectUser);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
   // user object
-  const user = useAppSelector((state) => state.auth.user);
+  // const user = useAppSelector((state) => state.auth.user);
   useEffect(() => {
-    if (user) navigate("/");
+    if (user) {
+      console.log("Found user, navigatiing to home");
+      navigate("/");
+    }
   }, [user, navigate]);
   // react form hook variables
   const form = useForm<LoginUser>({ resolver: zodResolver(loginUserSchema) });
@@ -31,13 +39,21 @@ export const LoginPage = () => {
   // form submit handler
   const onSubmit = async (formData: LoginUser) => {
     const { data, error } = await createLoginUserMutation(formData);
-    if (error) return console.log(error);
-    else {
+
+    if (error) {
+      return console.log(error);
+    } else if (!data) {
+      console.log("No Data");
+    } else {
+      console.log("-------- Login submitted data! ---------");
       console.log(data);
+      const { user, accessToken } = data.data;
+      dispatch(userLoggedIn({ user, accessToken }));
       navigate("/");
     }
   };
 
+  // if (isAuthLoading) return <div>Loading...</div>;
   return (
     <div className="w-full h-screen flex flex-col items-center justify-center gap-2">
       <div className="text-5xl font-black">Login!</div>

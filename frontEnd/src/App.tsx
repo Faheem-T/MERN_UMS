@@ -4,6 +4,7 @@ import { RegisterPage } from "./app/features/auth/RegisterPage";
 import { LoginPage } from "./app/features/auth/LoginPage";
 import { HomePage } from "./app/features/home/HomePage";
 import { ProtectedPage } from "./app/features/home/ProtectedPage";
+import { useCheckStatusQuery } from "./app/features/api/usersApi";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,9 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  // logs the user in automatically if a valid
+  // access token exists
+  useCheckStatusQuery();
   return <RouterProvider router={router} />;
 }
 
