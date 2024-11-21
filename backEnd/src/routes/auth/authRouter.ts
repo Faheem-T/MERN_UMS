@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  handle_initialCheck_get,
   handle_login_post,
   handle_logout_post,
   handle_refresh_get,
@@ -15,4 +16,5 @@ export const authRouter = Router()
   .post("/login", handle_login_post)
   .get("/status", verifyAccessTokenMiddleware, handle_status_get)
   .get("/refresh", handle_refresh_get)
-  .post("/logout", handle_logout_post);
+  .post("/logout", handle_logout_post)
+  .get("/initialCheck", handle_initialCheck_get);

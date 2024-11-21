@@ -79,10 +79,16 @@ export const handle_login_post = async (
     const user = await UserModel.findOne({
       $or: [{ username: identifier }, { email: identifier }],
     });
-    if (!user || !compareWithHash(password, user.password)) {
+    if (!user) {
       res.status(401).json({
         success: false,
-        message: "Invalid credentials",
+        message: "Invalid username / email",
+      });
+      return;
+    } else if (!compareWithHash(password, user.password)) {
+      res.status(401).json({
+        success: false,
+        message: "Wrong password",
       });
       return;
     }
@@ -208,14 +214,84 @@ export const handle_logout_post = async (req: Request, res: Response) => {
     res.status(500).json({ success: false, message: "Internal Server error" });
     return;
   }
-  res
-    .cookie("refreshToken", null, {
-      httpOnly: true,
-    })
-    .status(200)
-    .json({
-      message: "Refresh Token deleted",
-      accessToken: null,
-      user: null,
+  res.clearCookie("refreshToken", { path: "/" }).status(200).json({
+    message: "Refresh Token deleted",
+    accessToken: null,
+    user: null,
+  });
+};
+
+// handle GET to /api/auth/initialCheck
+// this is the endpoint that is first requested
+// by the front end.
+// if a valid refresh token is found, user
+// details and access token will be sent back.
+export const handle_initialCheck_get = async (req: Request, res: Response) => {
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) {
+    res
+      .status(401)
+      .json({ success: false, message: "Refresh token is required" });
+    console.log("No refresh token provided");
+    return;
+  }
+
+  // checking for refresh token in database
+  try {
+    const foundToken = await RefreshTokenModel.findOne({ refreshToken });
+    if (!foundToken) {
+      res
+        .status(401)
+        .json({ success: false, message: "Invalid refresh token" });
+      console.log("token not in db");
+      return;
+    }
+    const decoded = jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET as string
+    ) as JwtPayload;
+
+    const newAccessToken = generateAccessToken({ _id: decoded._id });
+    const newRefreshToken = generateRefreshToken({ _id: decoded._id });
+    if (!newRefreshToken) {
+      console.log("Did not create refresh token");
+      return;
+    }
+    foundToken.refreshToken = newRefreshToken;
+    await foundToken.save();
+
+    // generating user
+    const user = await UserModel.findById(decoded._id);
+    if (!user) {
+      res.status(401).json({ success: false, message: "User not found" });
+      return;
+    }
+
+    res
+      .cookie("refreshToken", newRefreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        path: "/",
+      })
+      .status(201)
+      .json({
+        success: true,
+        data: {
+          accessToken: newAccessToken,
+          user: {
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+          },
+        },
+      });
+  } catch (error: any) {
+    console.log("Error during token refresh:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error during token refresh",
     });
+  }
 };
