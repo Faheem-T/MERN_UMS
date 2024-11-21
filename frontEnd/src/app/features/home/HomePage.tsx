@@ -1,17 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../hooks";
+import { useAppSelector } from "../../hooks";
 import { useEffect } from "react";
-// import { useAuth } from "../api/usersApi";
-import { selectUser, userLoggedOut } from "../auth/authSlice";
-import { useLogOutUserMutation } from "../api/usersApi";
-// import { useCheckStatusQuery } from "../api/usersApi";
+import { selectUser } from "../auth/authSlice";
+import { Navbar } from "../../components/Navbar";
 
 export const HomePage = () => {
-  // const { isLoading, data } = useCheckStatusQuery({});
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
-  const [createLogOutMutation, { isLoading }] = useLogOutUserMutation();
 
   useEffect(() => {
     console.log("user: ", user);
@@ -19,16 +14,13 @@ export const HomePage = () => {
   }, [user, navigate]);
 
   return (
-    <div>
-      <div>Welcome Home {user?.username}!</div>
-      <button
-        onClick={() => {
-          createLogOutMutation();
-        }}
-        disabled={isLoading}
-      >
-        {isLoading ? "Logging out..." : "Log Out"}
-      </button>
-    </div>
+    <>
+      <Navbar />
+      <div className="h-screen w-full flex flex-col items-center justify-center">
+        <div className="font-black text-3xl">
+          Welcome Home {user?.username}!
+        </div>
+      </div>
+    </>
   );
 };
