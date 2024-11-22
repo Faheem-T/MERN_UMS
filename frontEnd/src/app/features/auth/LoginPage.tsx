@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginUser, loginUserSchema } from "../../ZodSchemas/userSchema";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthData, useLoginUserMutation } from "../api/authApi";
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks";
@@ -77,6 +77,12 @@ export const LoginPage = () => {
 
         <DevTool control={control} />
       </form>
+      <div>
+        Not registered?{" "}
+        <Link to="/register" className="text-primary hover:underline">
+          register here
+        </Link>
+      </div>
     </div>
   );
 };

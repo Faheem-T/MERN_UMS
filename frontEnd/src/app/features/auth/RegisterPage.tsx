@@ -3,7 +3,7 @@ import { DevTool } from "@hookform/devtools";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User, userSchema } from "../../ZodSchemas/userSchema";
 import { useRegisterUserMutation } from "../api/authApi";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 export const RegisterPage = () => {
   const navigate = useNavigate();
   // react form hook variables
@@ -51,6 +51,12 @@ export const RegisterPage = () => {
 
         <DevTool control={control} />
       </form>
+      <div>
+        Already registered?{" "}
+        <Link to="/login" className="text-primary hover:underline">
+          login here
+        </Link>
+      </div>
     </div>
   );
 };
