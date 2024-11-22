@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User, userSchema } from "../../ZodSchemas/userSchema";
-import { useRegisterUserMutation } from "../api/usersApi";
+import { useRegisterUserMutation } from "../api/authApi";
 import { useNavigate } from "react-router-dom";
 export const RegisterPage = () => {
   const navigate = useNavigate();

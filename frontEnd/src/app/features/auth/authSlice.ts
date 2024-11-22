@@ -8,6 +8,7 @@ export interface authState {
     username: string;
     email: string;
     role: "user" | "admin";
+    pfpUrl: string | null;
   };
 }
 const initialState: authState = {
@@ -39,3 +40,4 @@ export default authSlice.reducer;
 // selectors
 export const selectAccessToken = (state: RootState) => state.auth.accessToken;
 export const selectUser = (state: RootState) => state.auth.user;
+export const selectUserId = (state: RootState) => selectUser(state)?.id;

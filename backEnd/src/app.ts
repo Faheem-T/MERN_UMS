@@ -3,9 +3,10 @@ import logger from "morgan";
 import cors from "cors";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
-import { authRouter } from "./routes/auth/authRouter";
+import { authRouter } from "./routes/authRouter";
 import * as dotenv from "dotenv";
 import { verifyAccessTokenMiddleware } from "./middlewares/verifyAccessTokenMiddleware";
+import { pfpRouter } from "./routes/pfpRouter";
 dotenv.config();
 
 const app = Express();
@@ -26,12 +27,15 @@ mongoose
   });
 
 app.use("/api/auth", authRouter);
+app.use("/api/pfp", pfpRouter);
 
 const handle_protected_get = (req: Request, res: Response) => {
   console.log("hi");
   res.json({ message: "you are verified!!" });
 };
 app.use("/protected", verifyAccessTokenMiddleware, handle_protected_get);
+
+// app.use((req, res, next, err,) => {})
 
 app.listen(PORT, () => {
   console.log(`Listening on http://localhost:${PORT}`);

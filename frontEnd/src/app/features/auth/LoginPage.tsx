@@ -3,7 +3,7 @@ import { DevTool } from "@hookform/devtools";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginUser, loginUserSchema } from "../../ZodSchemas/userSchema";
 import { useNavigate } from "react-router-dom";
-import { AuthData, useLoginUserMutation } from "../api/usersApi";
+import { AuthData, useLoginUserMutation } from "../api/authApi";
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { selectUser, userLoggedIn } from "./authSlice";

@@ -1,38 +1,51 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-// import { UsersList } from "./UsersList";
 import { RegisterPage } from "./app/features/auth/RegisterPage";
 import { LoginPage } from "./app/features/auth/LoginPage";
 import { HomePage } from "./app/features/home/HomePage";
-import { ProtectedPage } from "./app/features/home/ProtectedPage";
-import { useInitialCheckQuery } from "./app/features/api/usersApi";
+import { ProtectedRoutes } from "./app/features/home/ProtectedRoutes";
+import { useInitialCheckQuery } from "./app/features/api/authApi";
 import { useAppDispatch } from "./app/hooks";
 import { userLoggedIn } from "./app/features/auth/authSlice";
+import { AdminOnlyRoutes } from "./app/features/home/AdminOnlyRoutes";
+import { Dashboard } from "./app/features/adminDashboard/Dashboard";
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <HomePage />,
+    element: <ProtectedRoutes />,
+    children: [
+      {
+        path: "/",
+        element: <HomePage />,
+      },
+    ],
+  },
+  {
+    element: <AdminOnlyRoutes />,
+    children: [
+      {
+        path: "/dashboard",
+        element: <Dashboard />,
+      },
+    ],
   },
   { path: "/register", element: <RegisterPage /> },
   {
     path: "/login",
     element: <LoginPage />,
   },
-  {
-    path: "/protected",
-    element: <ProtectedPage />,
-  },
 ]);
 
 function App() {
   // useInitialCheckQuery logs the user in automatically
   // if a valid refresh token exists
-  const { data, isLoading } = useInitialCheckQuery();
   const dispatch = useAppDispatch();
+
+  const { data, isLoading, error } = useInitialCheckQuery();
   if (isLoading) {
     return <div>Loading...</div>;
-  }
-  if (data) {
+  } else if (error) {
+    console.log(error);
+  } else if (data) {
     const refreshToken = data.data.accessToken;
     const user = data.data.user;
     dispatch(userLoggedIn({ refreshToken, user }));

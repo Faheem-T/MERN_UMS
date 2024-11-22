@@ -22,6 +22,7 @@ export const verifyAccessTokenMiddleware = (
   }
   try {
     jwt.verify(accessToken, accessTokenSecret);
+    console.log(req.body);
     next();
   } catch {
     res.status(403).json({ message: "Invalid token" });

@@ -8,6 +8,10 @@ const UserSchema = new Schema({
     type: Schema.Types.String,
     default: "user",
   },
+  pfpUrl: {
+    type: Schema.Types.String,
+    default: null,
+  },
 });
 
 export interface UserInterface {
@@ -15,6 +19,7 @@ export interface UserInterface {
   password: string;
   email: string;
   role: "user" | "admin";
+  pfpUrl: string | null;
 }
 
 export const UserModel = model<UserInterface>("user", UserSchema);

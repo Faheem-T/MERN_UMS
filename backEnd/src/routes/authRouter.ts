@@ -6,10 +6,10 @@ import {
   handle_refresh_get,
   handle_register_post,
   handle_status_get,
-} from "../../controllers/auth/authController";
-import { validateUserMiddleware } from "../../middlewares/validateUserMiddleware";
+} from "../controllers/authController";
+import { validateUserMiddleware } from "../middlewares/validateUserMiddleware";
 import jwt from "jsonwebtoken";
-import { verifyAccessTokenMiddleware } from "../../middlewares/verifyAccessTokenMiddleware";
+import { verifyAccessTokenMiddleware } from "../middlewares/verifyAccessTokenMiddleware";
 
 export const authRouter = Router()
   .post("/register", validateUserMiddleware, handle_register_post)

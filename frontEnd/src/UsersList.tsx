@@ -1,4 +1,4 @@
-import { useGetUsersQuery } from "./app/features/api/usersApi";
+import { useGetUsersQuery } from "./app/features/api/authApi";
 
 export const UsersList = () => {
   const { data, isLoading, isError } = useGetUsersQuery({});

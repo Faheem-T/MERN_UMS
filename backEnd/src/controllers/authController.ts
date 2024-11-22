@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { User } from "../../ZodSchemas/userSchema";
-import { UserModel } from "../../models/UserModel";
-import { LoginUser } from "../../ZodSchemas/userSchema";
+import { User } from "../ZodSchemas/userSchema";
+import { UserModel } from "../models/UserModel";
+import { LoginUser } from "../ZodSchemas/userSchema";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-import { RefreshTokenModel } from "../../models/RefreshTokenModel";
-import { compareWithHash, generateHash } from "../../utils/hashUtils";
+import { RefreshTokenModel } from "../models/RefreshTokenModel";
+import { compareWithHash, generateHash } from "../utils/hashUtils";
 
 const REFRESH_TOKEN_LIFESPAN = 1000 * 60; // 1 minute
 const ACCESS_TOKEN_LIFESPAN = 60; // in seconds
@@ -64,7 +64,6 @@ export const handle_login_post = async (
   req: Request<{}, {}, LoginUser>,
   res: Response
 ) => {
-  console.log(req.cookies);
   const { identifier, password } = req.body;
 
   if (!identifier || !password) {
@@ -116,6 +115,7 @@ export const handle_login_post = async (
             username: user.username,
             email: user.email,
             role: user.role,
+            pfpUrl: user.pfpUrl,
           },
         },
       });
@@ -284,6 +284,7 @@ export const handle_initialCheck_get = async (req: Request, res: Response) => {
             username: user.username,
             email: user.email,
             role: user.role,
+            pfpUrl: user.pfpUrl,
           },
         },
       });
