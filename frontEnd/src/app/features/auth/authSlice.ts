@@ -1,16 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
+import { authState } from "../../utils/types";
 
-export interface authState {
-  accessToken: string | null;
-  user: null | {
-    id: string;
-    username: string;
-    email: string;
-    role: "user" | "admin";
-    pfpUrl: string | null;
-  };
-}
 const initialState: authState = {
   accessToken: null,
   user: null,

@@ -7,6 +7,7 @@ import { authRouter } from "./routes/authRouter";
 import * as dotenv from "dotenv";
 import { verifyAccessTokenMiddleware } from "./middlewares/verifyAccessTokenMiddleware";
 import { pfpRouter } from "./routes/pfpRouter";
+import { usersRouter } from "./routes/usersRouter";
 dotenv.config();
 
 const app = Express();
@@ -28,6 +29,7 @@ mongoose
 
 app.use("/api/auth", authRouter);
 app.use("/api/pfp", pfpRouter);
+app.use("/api/users", verifyAccessTokenMiddleware, usersRouter);
 
 const handle_protected_get = (req: Request, res: Response) => {
   console.log("hi");

@@ -4,10 +4,9 @@ import mongoose from "mongoose";
 
 export const handle_pfpUpload_post = async (req: Request, res: Response) => {
   const { pfpUrl, userId } = req.body;
-  console.log("Profile Url:", pfpUrl);
-  console.log("ID: ", userId);
 
   const id = new mongoose.Types.ObjectId(userId);
+  console.log(`User ID: `, id);
   try {
     await UserModel.findByIdAndUpdate(id, {
       pfpUrl,

@@ -25,7 +25,7 @@ export const Navbar = ({ pfpUrl = null, userRole = "user" }: NavbarProps) => {
           {isLoading ? "Logging out..." : "Log Out"}
         </button>
         <div className="rounded-full overflow-hidden h-12 w-12 flex items-center justify-center border border-black">
-          <img src={pfpUrl ?? "userIcon.jpg"} />
+          <img src={pfpUrl ?? "userIcon.jpg"} className="shrink-0" />
         </div>
       </div>
     </div>

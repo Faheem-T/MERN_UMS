@@ -9,7 +9,7 @@ const pfpUploadApi = apiSlice.injectEndpoints({
         body: args,
         // headers: { "Content-Type": "application/json" },
       }),
-      invalidatesTags: ["User"],
+      invalidatesTags: ["Auth"],
     }),
   }),
 });

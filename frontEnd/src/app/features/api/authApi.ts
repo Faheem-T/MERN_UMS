@@ -1,18 +1,13 @@
 import { LoginUser, User } from "../../ZodSchemas/userSchema";
-import { authState, userLoggedOut } from "../auth/authSlice";
+import { userLoggedOut } from "../auth/authSlice";
 import { apiSlice } from "../../api";
-
-export interface AuthData {
-  data: authState;
-  success: boolean;
-  message: string;
-}
+import { AuthData } from "../../utils/types";
 
 export const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     initialCheck: builder.query<AuthData, void>({
       query: () => "/auth/initialCheck",
-      providesTags: ["User"],
+      providesTags: ["Auth"],
     }),
     registerUser: builder.mutation<AuthData, User>({
       // TODO: look into what the return type is
@@ -40,16 +35,15 @@ export const authApi = apiSlice.injectEndpoints({
     //   // providesTags: ["Auth"],
     // }),
 
-    protectedRoute: builder.query<any, void>({
-      query: () => "/protected",
-    }),
+    // protectedRoute: builder.query<any, void>({
+    //   query: () => "/protected",
+    // }),
 
     logOutUser: builder.mutation<void, void>({
       query: () => ({
         url: "/auth/logout",
         method: "POST",
       }),
-      // invalidatesTags: ["Auth"],
       onQueryStarted: async (_, { dispatch }) => {
         // Clear the user state after logout
         dispatch(authApi.util.resetApiState());
@@ -64,7 +58,7 @@ export const {
   useLoginUserMutation,
   useCheckStatusQuery,
   // useRefreshAccessTokenQuery,
-  useProtectedRouteQuery,
+  // useProtectedRouteQuery,
   useLogOutUserMutation,
   useInitialCheckQuery,
 } = authApi;
