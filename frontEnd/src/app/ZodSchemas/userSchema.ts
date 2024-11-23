@@ -23,3 +23,10 @@ export const loginUserSchema = z.object({
 });
 
 export type LoginUser = z.infer<typeof loginUserSchema>;
+
+export const editUserSchema = z.object({
+  email: z.string().min(1, "Email is required"),
+  username: z.string().min(1, "Username is required"),
+});
+
+export type EditUser = z.infer<typeof editUserSchema>;

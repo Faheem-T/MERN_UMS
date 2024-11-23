@@ -15,9 +15,8 @@ export const RegisterPage = () => {
 
   // form submit handler
   const onSubmit = async (formData: User) => {
-    const { data, error } = await createRegisterUserMutation({ ...formData });
+    const { error } = await createRegisterUserMutation({ ...formData });
     if (error) return console.log(error);
-    console.log(data);
     return navigate("/login");
   };
 

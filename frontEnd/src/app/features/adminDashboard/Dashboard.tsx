@@ -1,14 +1,21 @@
+import { useState } from "react";
 import { Navbar } from "../../components/Navbar";
 import { useAppSelector } from "../../hooks";
 import { useDeleteUserMutation, useGetUsersQuery } from "../api/usersApi";
 import { selectUser } from "../auth/authSlice";
+import { UserType } from "../../utils/types";
+import { UpdateUserModal } from "./UpdateUserModal";
 
 export const Dashboard = () => {
   const user = useAppSelector(selectUser);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userBeingEdited, setUserBeingEdited] = useState<UserType | null>(null);
+
   const [createDeleteUserMutation] = useDeleteUserMutation();
 
   const { data, isLoading } = useGetUsersQuery();
+
   const users = data?.users;
   let renderedUsers;
   if (!users) renderedUsers = <tr>No users found</tr>;
@@ -25,19 +32,33 @@ export const Dashboard = () => {
         <td>{user.username}</td>
         <td>{user.email}</td>
         <td>
-          <button onClick={() => createDeleteUserMutation(user.id)}>
+          <button
+            onClick={() => createDeleteUserMutation(user.id)}
+            className="border p-2 rounded-md"
+          >
             Delete
           </button>
         </td>
         <td>
-          <button>Edit</button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!isModalOpen) {
+                setUserBeingEdited(user);
+                setIsModalOpen(true);
+              }
+            }}
+            className="border p-2 rounded-md"
+          >
+            Edit
+          </button>
         </td>
       </tr>
     ));
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" onClick={() => setIsModalOpen(false)}>
       <Navbar pfpUrl={user?.pfpUrl} userRole={user?.role} />
       {/* <div className="h"></div> */}
       <div className="flex items-center justify-center">
@@ -59,6 +80,11 @@ export const Dashboard = () => {
           </table>
         )}
       </div>
+      <UpdateUserModal
+        isOpen={isModalOpen}
+        user={userBeingEdited}
+        setIsOpen={setIsModalOpen}
+      />
     </div>
   );
 };

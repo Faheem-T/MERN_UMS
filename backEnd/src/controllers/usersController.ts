@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { UserInterface, UserModel } from "../models/UserModel";
 
 // handles GET request to /api/users/
@@ -40,5 +40,23 @@ export const handle_user_delete = async (req: Request, res: Response) => {
   } catch (error) {
     console.log("Error while deleting user by id: ", error);
     res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+// handles PATCH request to /api/users/:id
+export const handle_user_patch = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
+  const updateUser = req.body;
+  try {
+    await UserModel.findByIdAndUpdate(id, {
+      ...updateUser,
+    });
+    res.status(200).send();
+  } catch (error) {
+    next(error);
   }
 };

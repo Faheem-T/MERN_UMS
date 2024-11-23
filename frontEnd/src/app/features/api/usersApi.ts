@@ -2,24 +2,36 @@ import { apiSlice } from "../../api";
 import { UserType } from "../../utils/types";
 
 const usersApi = apiSlice.injectEndpoints({
-  endpoints: (bulider) => ({
-    getUsers: bulider.query<{ users: UserType[] }, void>({
+  endpoints: (builder) => ({
+    getUsers: builder.query<{ users: UserType[] }, void>({
       query: () => "/users",
       providesTags: ["Users"],
     }),
-    getUser: bulider.query<{ user: UserType }, void>({
+    getUser: builder.query<{ user: UserType }, void>({
       query: (userId) => `/users/${userId}`,
       providesTags: ["Users"],
     }),
-    deleteUser: bulider.mutation({
+    deleteUser: builder.mutation({
       query: (userId) => ({
         url: `/users/${userId}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Users"],
     }),
+    updateUser: builder.mutation({
+      query: ({ userId, updateUser }) => ({
+        url: `/users/${userId}`,
+        method: "PATCH",
+        body: updateUser,
+      }),
+      invalidatesTags: ["Users"],
+    }),
   }),
 });
 
-export const { useGetUsersQuery, useGetUserQuery, useDeleteUserMutation } =
-  usersApi;
+export const {
+  useGetUsersQuery,
+  useGetUserQuery,
+  useDeleteUserMutation,
+  useUpdateUserMutation,
+} = usersApi;

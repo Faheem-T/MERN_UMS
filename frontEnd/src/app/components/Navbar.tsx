@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useLogOutUserMutation } from "../features/api/authApi";
 
 interface NavbarProps {
@@ -9,7 +10,9 @@ export const Navbar = ({ pfpUrl = null, userRole = "user" }: NavbarProps) => {
   const [createLogOutMutation, { isLoading }] = useLogOutUserMutation();
   return (
     <div className="p-4 flex justify-between items-center h-20">
-      <div className="font-black text-xl">HOME</div>
+      <div className="font-black text-xl">
+        <Link to="/">HOME</Link>
+      </div>
       <div className="flex gap-2 h-full justify-between items-center">
         {/* dashboard button that is only displayed for admins */}
         {userRole === "admin" && (

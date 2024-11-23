@@ -1,4 +1,4 @@
-import Express, { Request, Response } from "express";
+import Express, { ErrorRequestHandler, Request, Response } from "express";
 import logger from "morgan";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -37,7 +37,12 @@ const handle_protected_get = (req: Request, res: Response) => {
 };
 app.use("/protected", verifyAccessTokenMiddleware, handle_protected_get);
 
-// app.use((req, res, next, err,) => {})
+const erorrHandler: ErrorRequestHandler = (err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ success: false, message: "Internal server error" });
+};
+
+app.use(erorrHandler);
 
 app.listen(PORT, () => {
   console.log(`Listening on http://localhost:${PORT}`);

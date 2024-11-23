@@ -40,8 +40,6 @@ export const LoginPage = () => {
     } else if (!data) {
       console.log("No Data");
     } else {
-      console.log("-------- Login submitted data! ---------");
-      console.log(data);
       const { user, accessToken } = data.data;
       dispatch(userLoggedIn({ user, accessToken }));
       navigate("/");

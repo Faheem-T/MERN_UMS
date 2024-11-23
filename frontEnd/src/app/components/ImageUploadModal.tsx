@@ -20,7 +20,7 @@ interface UploadImageForm extends HTMLFormElement {
 export const ImageUploadModal = ({ open }: ImageUploadModalProps) => {
   const modalRoot = document.getElementById("modalRoot");
   const [imgSrc, setImgSrc] = useState<null | string>(null);
-  const [createUploadPfpMutation, {}] = useUploadPfpMutation();
+  const [createUploadPfpMutation] = useUploadPfpMutation();
   // current user's ID
   const userId = useAppSelector(selectUserId);
 
@@ -31,6 +31,8 @@ export const ImageUploadModal = ({ open }: ImageUploadModalProps) => {
       setImgSrc(URL.createObjectURL(e.target.files[0]));
     }
   };
+
+  if (!open || !userId) return null;
 
   const handleSubmit = async (e: React.FormEvent<UploadImageForm>) => {
     e.preventDefault();
@@ -43,17 +45,10 @@ export const ImageUploadModal = ({ open }: ImageUploadModalProps) => {
     const url = await uploadToCloudinary(formData);
     console.log(url);
     createUploadPfpMutation({ pfpUrl: url, userId });
-    // console.log("FormData entries:");
-    // for (let pair of formData.entries()) {
-    //   console.log(pair[0], pair[1]);
-    // }
-    // console.log(imgFile);
-    // createUploadPfpMutation(formData);
   };
   if (!modalRoot) {
     return <div>Modal Root not Found</div>;
   }
-  if (!open) return null;
   return createPortal(
     <div
       className="fixed inset-0 bg-black bg-opacity-70 z-50 flex flex-col items-center justify-center"
@@ -62,7 +57,7 @@ export const ImageUploadModal = ({ open }: ImageUploadModalProps) => {
       }}
     >
       <form
-        className="w-1/2 h-1/2 bg-white flex flex-col items-center justify-center gap-3"
+        className="w-1/2 h-1/2 bg-white flex flex-col items-center justify-center gap-3 rounded-lg"
         onClick={(e) => {
           // stopping propagation which clicked on modal main body
           // so that it isn't closed
