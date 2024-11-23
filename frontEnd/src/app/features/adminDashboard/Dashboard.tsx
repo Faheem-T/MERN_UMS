@@ -5,11 +5,13 @@ import { useDeleteUserMutation, useGetUsersQuery } from "../api/usersApi";
 import { selectUser } from "../auth/authSlice";
 import { UserType } from "../../utils/types";
 import { UpdateUserModal } from "./UpdateUserModal";
+import { CreateUserModal } from "./CreateUserModal";
 
 export const Dashboard = () => {
   const user = useAppSelector(selectUser);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [userBeingEdited, setUserBeingEdited] = useState<UserType | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const pattern = new RegExp(searchQuery.trim(), "i");
@@ -48,9 +50,9 @@ export const Dashboard = () => {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              if (!isModalOpen) {
+              if (!isUpdateModalOpen) {
                 setUserBeingEdited(user);
-                setIsModalOpen(true);
+                setIsUpdateModalOpen(true);
               }
             }}
             className="border p-2 rounded-md"
@@ -63,7 +65,13 @@ export const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen" onClick={() => setIsModalOpen(false)}>
+    <div
+      className="min-h-screen"
+      onClick={() => {
+        setIsUpdateModalOpen(false);
+        setIsCreateModalOpen(false);
+      }}
+    >
       <Navbar pfpUrl={user?.pfpUrl} userRole={user?.role} />
       {/* <div className="h"></div> */}
       <div className="flex flex-col items-center justify-center m-2">
@@ -97,9 +105,25 @@ export const Dashboard = () => {
         )}
       </div>
       <UpdateUserModal
-        isOpen={isModalOpen}
+        isOpen={isUpdateModalOpen}
         user={userBeingEdited}
-        setIsOpen={setIsModalOpen}
+        setIsOpen={setIsUpdateModalOpen}
+      />
+
+      <div className="flex items-center justify-center m-8">
+        <button
+          className="border p-2 rounded-lg"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsCreateModalOpen(true);
+          }}
+        >
+          CREATE NEW USER
+        </button>
+      </div>
+      <CreateUserModal
+        isOpen={isCreateModalOpen}
+        setIsOpen={setIsCreateModalOpen}
       />
     </div>
   );

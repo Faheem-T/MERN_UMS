@@ -26,6 +26,14 @@ const usersApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Users"],
     }),
+    createUser: builder.mutation({
+      query: ({ newUser }) => ({
+        url: "/users",
+        method: "POST",
+        body: newUser,
+      }),
+      invalidatesTags: ["Users"],
+    }),
   }),
 });
 
@@ -34,4 +42,5 @@ export const {
   useGetUserQuery,
   useDeleteUserMutation,
   useUpdateUserMutation,
+  useCreateUserMutation,
 } = usersApi;

@@ -20,7 +20,7 @@ interface UploadImageForm extends HTMLFormElement {
 export const ImageUploadModal = ({ open }: ImageUploadModalProps) => {
   const modalRoot = document.getElementById("modalRoot");
   const [imgSrc, setImgSrc] = useState<null | string>(null);
-  const [createUploadPfpMutation] = useUploadPfpMutation();
+  const [createUploadPfpMutation, { isLoading }] = useUploadPfpMutation();
   // current user's ID
   const userId = useAppSelector(selectUserId);
 
@@ -43,6 +43,7 @@ export const ImageUploadModal = ({ open }: ImageUploadModalProps) => {
     formData.append("file", imgFile);
     formData.append("upload_preset", "pfpUpload");
     const url = await uploadToCloudinary(formData);
+
     console.log(url);
     createUploadPfpMutation({ pfpUrl: url, userId });
   };
@@ -77,8 +78,11 @@ export const ImageUploadModal = ({ open }: ImageUploadModalProps) => {
           onChange={handleImageUpload}
           className="file:rounded-md"
         />
-        <button className="p-2 border bg-primary text-white font-bold">
-          Submit
+        <button
+          className="p-2 border bg-primary text-white font-bold"
+          disabled={isLoading}
+        >
+          {isLoading ? "Loading..." : "Submit"}
         </button>
       </form>
     </div>,

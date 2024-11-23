@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { UserInterface, UserModel } from "../models/UserModel";
+import { generateHash } from "../utils/hashUtils";
 
 // handles GET request to /api/users/
 export const handle_users_get = async (req: Request, res: Response) => {
@@ -56,6 +57,23 @@ export const handle_user_patch = async (
       ...updateUser,
     });
     res.status(200).send();
+  } catch (error) {
+    next(error);
+  }
+};
+
+// handles POST request to /api/users
+
+export const handle_users_post = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const newUser = req.body;
+  newUser.password = generateHash(newUser.password);
+  try {
+    const createdUser = await UserModel.create({ ...newUser });
+    res.status(200).json({ createdUser });
   } catch (error) {
     next(error);
   }

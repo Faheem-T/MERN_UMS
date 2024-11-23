@@ -1,46 +1,39 @@
 import { createPortal } from "react-dom";
-import { UserType } from "../../utils/types";
 import { useForm } from "react-hook-form";
-import { EditUser, editUserSchema } from "../../ZodSchemas/userSchema";
+import { EditUser, User, userSchema } from "../../ZodSchemas/userSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useUpdateUserMutation } from "../api/usersApi";
+import { useCreateUserMutation } from "../api/usersApi";
 import React from "react";
 
-interface UpdateUserModalProps {
+interface createUserModalProps {
   isOpen: boolean;
-  user: UserType | null;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const UpdateUserModal = ({
+export const CreateUserModal = ({
   isOpen,
   setIsOpen,
-  user,
-}: UpdateUserModalProps) => {
+}: createUserModalProps) => {
   const modalRoot = document.getElementById("modalRoot");
-  const [createUpdateUserMutation, { isLoading, isSuccess }] =
-    useUpdateUserMutation();
+  const [createCreateUserMutation, { isLoading, isSuccess }] =
+    useCreateUserMutation();
 
-  const { register, handleSubmit, formState, setValue } = useForm<EditUser>({
-    resolver: zodResolver(editUserSchema),
+  const { register, handleSubmit, formState } = useForm<User>({
+    resolver: zodResolver(userSchema),
   });
   const { errors } = formState;
 
-  if (!isOpen || !user) {
+  if (!isOpen) {
     return null;
   }
-
-  setValue("email", user?.email);
-  setValue("username", user?.username);
 
   if (!modalRoot) {
     return <div>Modal Root not Found</div>;
   }
 
   const onSubmit = async (formData: EditUser) => {
-    await createUpdateUserMutation({
-      userId: user.id,
-      updateUser: { ...formData },
+    await createCreateUserMutation({
+      newUser: { ...formData },
     });
     setIsOpen(false);
   };
@@ -57,14 +50,17 @@ export const UpdateUserModal = ({
         }}
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="rounded-full overflow-hidden h-40 w-40 flex items-center justify-center border border-black">
-          <img src={user.pfpUrl || "userIcon.jpg"} className="w-full border" />
-        </div>
-        <input {...register("email")}></input>
-        <input {...register("username")}></input>
+        <div className="font-bold text-2xl text-black">CREATE USER</div>
+        <input placeholder="username" {...register("username")} />
+        <input placeholder="email" {...register("email")} />
+        <input
+          placeholder="password"
+          {...register("password")}
+          type="password"
+        />
 
         <button className="p-2 border bg-primary text-white font-bold">
-          {isLoading ? "Loading..." : isSuccess ? "User updated!" : "Submit"}
+          {isLoading ? "Loading..." : isSuccess ? "User created!" : "Submit"}
         </button>
 
         <div className="text-red-600">
