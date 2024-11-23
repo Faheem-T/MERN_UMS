@@ -46,7 +46,7 @@ These are the websites and videos that helped me to create this project:
    &nbsp;&nbsp;I was able to understand redux in a really deep manner with this.  
    &nbsp;&nbsp;Even though it took me a long time to get through it, it was  
    &nbsp;&nbsp;definitely worth it.
-- [Human Redux](https://read.reduxbook.com/)
+- [Human Redux](https://read.reduxbook.com/)  
   &nbsp;&nbsp;This is a pretty old online book on redux. But I still found it to
   &nbsp;&nbsp;be useful. I was able to get a good understanding on how Redux
   &nbsp;&nbsp;works. I read through the first two chapters.
