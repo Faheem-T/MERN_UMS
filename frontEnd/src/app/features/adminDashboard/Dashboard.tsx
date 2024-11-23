@@ -11,16 +11,21 @@ export const Dashboard = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userBeingEdited, setUserBeingEdited] = useState<UserType | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const pattern = new RegExp(searchQuery.trim(), "i");
 
   const [createDeleteUserMutation] = useDeleteUserMutation();
 
   const { data, isLoading } = useGetUsersQuery();
 
   const users = data?.users;
+  const filteredUsers = users?.filter((user) => {
+    return pattern.test(user.username) || pattern.test(user.email);
+  });
   let renderedUsers;
-  if (!users) renderedUsers = <tr>No users found</tr>;
+  if (!filteredUsers) renderedUsers = <tr>No users found</tr>;
   else {
-    renderedUsers = users.map((user, i) => (
+    renderedUsers = filteredUsers.map((user, i) => (
       <tr key={user.id}>
         <td>{i + 1}</td>
         <td className="rounded-full overflow-hidden h-12 w-12 flex items-center justify-center">
@@ -61,6 +66,14 @@ export const Dashboard = () => {
     <div className="min-h-screen" onClick={() => setIsModalOpen(false)}>
       <Navbar pfpUrl={user?.pfpUrl} userRole={user?.role} />
       {/* <div className="h"></div> */}
+      <div className="flex flex-col items-center justify-center m-2">
+        <input
+          className="w-1/2 p-2 rounded-lg"
+          placeholder="Search for user"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
       <div className="flex items-center justify-center">
         {isLoading ? (
           <div>Loading...</div>

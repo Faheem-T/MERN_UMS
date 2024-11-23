@@ -2,6 +2,7 @@ import {
   BaseQueryFn,
   createApi,
   fetchBaseQuery,
+  FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
 import { RootState } from "./store";
 import { userLoggedIn, userLoggedOut } from "./features/auth/authSlice";
@@ -25,11 +26,13 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
   if (result.error?.status === 403) {
     console.log("Refreshing access token...");
     try {
-      const { data: refreshResult, error } = await baseQuery(
-        "auth/refresh",
-        api,
-        extraOptions
-      );
+      const {
+        data: refreshResult = {},
+        error,
+      }: Partial<{
+        data: unknown | object | { data: { accessToken: string } } | undefined;
+        error: FetchBaseQueryError;
+      }> = await baseQuery("auth/refresh", api, extraOptions);
       if (error) throw error;
       if (refreshResult) {
         console.log("Token refresh successful!");
@@ -42,6 +45,7 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
         api.dispatch(userLoggedOut());
       }
     } catch (error) {
+      console.log(error);
       console.log("Refresh failed, logging out user...");
       api.dispatch(userLoggedOut());
       // await api.dispatch(usersApi.endpoints.logOutUser.initiate()).unwrap();
