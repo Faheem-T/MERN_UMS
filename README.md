@@ -36,8 +36,8 @@ These are all of the libraries and framewords that were used in this project:
 
 ## References
 
-These are the websites and videos that helped me to create this project:
-[The Official Redux Essentials Docs](https://redux.js.org/tutorials/essentials/part-1-overview-concepts)
-&nbsp;&nbsp;I was able to understand redux in a really deep manner with this.
-&nbsp;&nbsp;Even though it took me a long time to get through it, it was
+These are the websites and videos that helped me to create this project:  
+1)[The Official Redux Essentials Docs](https://redux.js.org/tutorials/essentials/part-1-overview-concepts)  
+&nbsp;&nbsp;I was able to understand redux in a really deep manner with this.  
+&nbsp;&nbsp;Even though it took me a long time to get through it, it was  
 &nbsp;&nbsp;definitely worth it.
