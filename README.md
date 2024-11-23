@@ -69,13 +69,13 @@ really helped me get a grasp of how thunks and async flow work in redux
 
 ### TypeScript
 
-I decided to learn TypeScript this week since the Redux documentation recommended
-using TS with Redux. And I have wanted to understand what TS is for a long time now
+I decided to learn TypeScript this week since the Redux documentation recommended  
+using TS with Redux. And I have wanted to understand what TS is for a long time now  
 so I thought "why not?" :shrug:
 
 - [Scrimba's course on TS](https://scrimba.com/learn-typescript-c03c)
-  &nbsp;&nbsp;This was a really good introduction to TypeScript.
-  &nbsp;&nbsp;The course was pretty entertaining and had a good pace.
+  &nbsp;&nbsp;This was a really good introduction to TypeScript.  
+  &nbsp;&nbsp;The course was pretty entertaining and had a good pace.  
   &nbsp;&nbsp;Would definitely recommend. :thumbsup:
 
 ### Cloudinary (Uploading images)
