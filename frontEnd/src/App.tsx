@@ -9,6 +9,7 @@ import { userLoggedIn } from "./app/features/auth/authSlice";
 import { AdminOnlyRoutes } from "./app/features/home/AdminOnlyRoutes";
 import { Dashboard } from "./app/features/adminDashboard/Dashboard";
 import { useEffect } from "react";
+import { Counter } from "./app/features/counter/Counter";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+  },
+  {
+    path: "/counter",
+    element: <Counter />,
   },
 ]);
 
