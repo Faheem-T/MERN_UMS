@@ -68,12 +68,15 @@ export const Dashboard = () => {
           <table className="w-3/4">
             <thead>
               <tr>
-                <th></th> {/*For count*/}
+                <th></th>
+                {/*For count*/}
                 <th>IMG</th>
                 <th>USERNAME</th>
                 <th>EMAIL</th>
-                <th></th> {/*Delete Button*/}
-                <th></th> {/*Edit Button*/}
+                <th></th>
+                {/*Delete Button*/}
+                <th></th>
+                {/*Edit Button*/}
               </tr>
             </thead>
             <tbody>{renderedUsers}</tbody>

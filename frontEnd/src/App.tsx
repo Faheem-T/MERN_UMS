@@ -8,6 +8,7 @@ import { useAppDispatch } from "./app/hooks";
 import { userLoggedIn } from "./app/features/auth/authSlice";
 import { AdminOnlyRoutes } from "./app/features/home/AdminOnlyRoutes";
 import { Dashboard } from "./app/features/adminDashboard/Dashboard";
+import { useEffect } from "react";
 
 const router = createBrowserRouter([
   {
@@ -39,16 +40,18 @@ function App() {
   // useInitialCheckQuery logs the user in automatically
   // if a valid refresh token exists
   const dispatch = useAppDispatch();
-
   const { data, isLoading, error } = useInitialCheckQuery();
+  useEffect(() => {
+    if (data) {
+      const refreshToken = data.data.accessToken;
+      const user = data.data.user;
+      dispatch(userLoggedIn({ refreshToken, user }));
+    }
+  }, [data, dispatch]);
   if (isLoading) {
     return <div>Loading...</div>;
   } else if (error) {
     console.log(error);
-  } else if (data) {
-    const refreshToken = data.data.accessToken;
-    const user = data.data.user;
-    dispatch(userLoggedIn({ refreshToken, user }));
   }
 
   return <RouterProvider router={router} />;

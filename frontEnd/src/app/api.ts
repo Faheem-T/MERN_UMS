@@ -31,9 +31,8 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
         extraOptions
       );
       if (error) throw error;
-      // const {} = result.data;
-      console.log(refreshResult);
       if (refreshResult) {
+        console.log("Token refresh successful!");
         const { user } = (api.getState() as RootState).auth;
         const { accessToken } = refreshResult.data;
         api.dispatch(userLoggedIn({ user, accessToken }));
@@ -43,7 +42,6 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
         api.dispatch(userLoggedOut());
       }
     } catch (error) {
-      console.log(error);
       console.log("Refresh failed, logging out user...");
       api.dispatch(userLoggedOut());
       // await api.dispatch(usersApi.endpoints.logOutUser.initiate()).unwrap();
